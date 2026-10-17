@@ -1,0 +1,74 @@
+add:
+  name: Ajouter un scénario au Séjour
+  description: Ajoute une entité scene.* existante à la liste de la carte Séjour.
+  fields:
+    entity_id:
+      required: true
+      selector:
+        entity:
+          domain: scene
+    title:
+      selector:
+        text:
+    icon:
+      selector:
+        text:
+    color:
+      selector:
+        text:
+    position:
+      selector:
+        number:
+          min: 0
+          max: 200
+remove:
+  name: Retirer un scénario du Séjour
+  description: Retire une entrée de la liste de la carte Séjour (l'entité scene.* elle-même n'est pas supprimée).
+  fields:
+    entity_id:
+      required: true
+      selector:
+        entity:
+          domain: scene
+rename:
+  name: Renommer un scénario du Séjour
+  description: Change le titre affiché d'une entrée de la liste.
+  fields:
+    entity_id:
+      required: true
+      selector:
+        entity:
+          domain: scene
+    title:
+      required: true
+      selector:
+        text:
+move:
+  name: Déplacer un scénario du Séjour
+  description: Change la position d'une entrée dans la liste (0 = tout en haut).
+  fields:
+    entity_id:
+      required: true
+      selector:
+        entity:
+          domain: scene
+    position:
+      required: true
+      selector:
+        number:
+          min: 0
+          max: 200
+capture:
+  name: Capturer l'état actuel comme scénario
+  description: Crée une nouvelle scène à partir de l'état exact actuel des lampes du Séjour et l'ajoute à la liste.
+  fields:
+    name:
+      required: true
+      selector:
+        text:
+    icon:
+      selector:
+        text:
+    color:
+      selector:
+        text:

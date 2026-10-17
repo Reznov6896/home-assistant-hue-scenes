@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 572" width="720" height="572" role="img" aria-labelledby="titre desc" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <title id="titre">Sans pont Hue : des lampes au tableau de bord</title>
+  <desc id="desc">Les sept lampes Hue et le variateur mural parlent Zigbee directement à une clé USB branchée sur le serveur. Home Assistant les pilote par son intégration Zigbee incluse (ZHA). Dans Home Assistant : les scènes, la galerie d'ambiances de l'intégration scene_presets, le composant maison sejour_scenes qui tient la liste éditable des scènes, et les automatisations et scripts maison (variateur, extinction planifiée, shuffle, fondu). Le tableau de bord a deux pages, Lumières et Scènes ; la page Scènes utilise la carte hue-like-light-card avec auto-entities, et deux modules maison posés à côté de la carte. Le pont et l'application Hue sont retirés.</desc>
+  <style>
+    .surface { fill: #fcfcfb; }
+    .t1 { fill: #0b0b0b; }
+    .t2 { fill: #52514e; }
+    .t3 { fill: #898781; }
+    .acc { fill: #186b62; }
+    .b1 { fill: none; stroke: #3d3c39; stroke-width: 1.5; }
+    .b2 { fill: none; stroke: #898781; stroke-width: 1; stroke-dasharray: 3 4; }
+    .bacc { fill: none; stroke: #186b62; stroke-width: 1.8; }
+    .fl { stroke: #52514e; stroke-width: 1.4; fill: none; }
+    .barre { stroke: #898781; stroke-width: 1.2; }
+    .pointe { fill: #52514e; }
+    .mono { font-family: ui-monospace, 'Cascadia Mono', Consolas, 'DejaVu Sans Mono', monospace; }
+    @media (prefers-color-scheme: dark) {
+      .surface { fill: #1a1a19; }
+      .t1 { fill: #ffffff; }
+      .t2 { fill: #c3c2b7; }
+      .t3 { fill: #8f8d86; }
+      .acc { fill: #4fb3a5; }
+      .b1 { stroke: #c3c2b7; }
+      .b2 { stroke: #6b6a64; }
+      .bacc { stroke: #4fb3a5; }
+      .fl { stroke: #c3c2b7; }
+      .barre { stroke: #6b6a64; }
+      .pointe { fill: #c3c2b7; }
+    }
+  </style>
+  <defs>
+    <marker id="p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="pointe" d="M0 0 L10 5 L0 10 z"/></marker>
+  </defs>
+
+  <rect class="surface" x="0" y="0" width="720" height="572" rx="8"/>
+
+  <text class="t1" x="24" y="34" font-size="16" font-weight="600">Sans pont : des lampes au tableau de bord</text>
+  <text class="t2" x="24" y="54" font-size="12">Les lampes parlent Zigbee directement au serveur ; deux pages du tableau de bord remplacent l'application.</text>
+
+  <!-- légende -->
+  <rect class="bacc" x="24" y="68" width="14" height="10" rx="1"/>
+  <text class="t2" x="44" y="77" font-size="11">écrit pour ce projet</text>
+  <rect class="b1" x="168" y="68" width="14" height="10" rx="1"/>
+  <text class="t2" x="188" y="77" font-size="11">Home Assistant ou projet réutilisé</text>
+  <rect class="b2" x="390" y="68" width="14" height="10" rx="1"/>
+  <text class="t2" x="410" y="77" font-size="11">retiré</text>
+
+  <!-- les appareils -->
+  <rect class="b1" x="24" y="96" width="300" height="46" rx="2"/>
+  <text class="t1" x="174" y="115" font-size="12.5" text-anchor="middle">7 lampes Hue · 1 variateur mural</text>
+  <text class="t2" x="174" y="132" font-size="10.5" text-anchor="middle">appareils Zigbee, réinitialisés puis appairés un à un</text>
+
+  <!-- l'ancien chemin -->
+  <rect class="b2" x="420" y="96" width="276" height="46" rx="2"/>
+  <text class="t3" x="558" y="115" font-size="12.5" text-anchor="middle">Pont Hue et application Hue</text>
+  <text class="t3" x="558" y="132" font-size="10.5" text-anchor="middle">pont retiré : plus rien n'en dépend</text>
+  <line class="barre" x1="330" y1="119" x2="414" y2="119" stroke-dasharray="3 4"/>
+  <line class="barre" x1="364" y1="111" x2="380" y2="127"/>
+  <line class="barre" x1="380" y1="111" x2="364" y2="127"/>
+
+  <line class="fl" x1="174" y1="144" x2="174" y2="168" marker-end="url(#p)"/>
+  <text class="t2" x="184" y="160" font-size="10.5">Zigbee, sans pont</text>
+
+  <rect class="b1" x="24" y="170" width="300" height="42" rx="2"/>
+  <text class="t1" x="174" y="188" font-size="12.5" text-anchor="middle">Clé Zigbee USB sur le serveur</text>
+  <text class="t2" x="174" y="204" font-size="10.5" text-anchor="middle">un seul coordinateur, surveillé toutes les 10 min</text>
+
+  <line class="fl" x1="174" y1="214" x2="174" y2="238" marker-end="url(#p)"/>
+
+  <!-- Home Assistant -->
+  <rect class="b1" x="24" y="240" width="672" height="146" rx="3" stroke-width="1.8"/>
+  <text class="t2 mono" x="38" y="258" font-size="10.5" letter-spacing="1.2">HOME ASSISTANT · INTÉGRATION ZIGBEE INCLUSE (ZHA)</text>
+
+  <rect class="b1" x="40" y="270" width="312" height="46" rx="2"/>
+  <text class="t1" x="56" y="289" font-size="12">Scènes de Home Assistant — 107</text>
+  <text class="t2" x="56" y="306" font-size="10.5">scenes.yaml, refaites à la main après le pont</text>
+
+  <rect class="b1" x="368" y="270" width="312" height="46" rx="2"/>
+  <text class="t1" x="384" y="289" font-size="12">scene_presets (Hypfer)</text>
+  <text class="t2" x="384" y="306" font-size="10.5">galerie d'ambiances, option « shuffle »</text>
+
+  <rect class="bacc" x="40" y="326" width="312" height="46" rx="2"/>
+  <text class="acc" x="56" y="345" font-size="12" font-weight="600">sejour_scenes — composant maison</text>
+  <text class="t2" x="56" y="362" font-size="10.5">liste éditable · capture · pastilles de couleur</text>
+
+  <rect class="bacc" x="368" y="326" width="312" height="46" rx="2"/>
+  <text class="acc" x="384" y="345" font-size="12" font-weight="600">Automatisations et scripts</text>
+  <text class="t2" x="384" y="362" font-size="10.5">variateur · extinction planifiée · shuffle · fondu</text>
+
+  <line class="fl" x1="196" y1="388" x2="196" y2="414" marker-end="url(#p)"/>
+  <text class="t2 mono" x="206" y="405" font-size="10">sensor.sejour_scenes_list</text>
+  <line class="fl" x1="524" y1="388" x2="524" y2="414" marker-end="url(#p)"/>
+  <text class="t2" x="534" y="405" font-size="10.5">états et services</text>
+
+  <!-- Tableau de bord -->
+  <rect class="b1" x="24" y="416" width="672" height="140" rx="3" stroke-width="1.8"/>
+  <text class="t2 mono" x="38" y="434" font-size="10.5" letter-spacing="1.2">TABLEAU DE BORD</text>
+
+  <rect class="b1" x="40" y="446" width="312" height="46" rx="2"/>
+  <text class="t1" x="56" y="465" font-size="12">Page Scènes</text>
+  <text class="t2" x="56" y="482" font-size="10.5">carte hue-like (Gh61) via auto-entities · galerie</text>
+
+  <rect class="b1" x="368" y="446" width="312" height="46" rx="2"/>
+  <text class="t1" x="384" y="465" font-size="12">Page Lumières</text>
+  <text class="t2" x="384" y="482" font-size="10.5">cartes natives : une tuile par lampe, plus le groupe</text>
+
+  <rect class="bacc" x="40" y="502" width="640" height="40" rx="2"/>
+  <text class="acc mono" x="56" y="520" font-size="11">hue-correctifs.js · scene-choix-row.js</text>
+  <text class="t2" x="56" y="535" font-size="10.5">posés à côté de la carte, hors du dossier de HACS : deux correctifs et une ligne de liste</text>
+</svg>
