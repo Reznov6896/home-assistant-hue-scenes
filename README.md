@@ -2,6 +2,8 @@
 
 Two Home Assistant pages that replace the Philips Hue app: per-light control, a 137-preset gallery, an editable scene list with on-screen capture, Shuffle/Fade effects, sleep timer and the Hue dimmer switch. Zigbee direct (ZHA): no bridge, no account, no cloud.
 
+> Configuration and a small custom component to adapt to your own lights, not a one-click HACS integration.
+
 ![Scenes page](screenshots/scenes.png)
 
 ![Architecture](architecture.svg)
