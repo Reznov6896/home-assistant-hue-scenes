@@ -1,0 +1,74 @@
+add:
+  name: Add a scene to the list
+  description: Adds an existing scene.* entity to the card's scene list.
+  fields:
+    entity_id:
+      required: true
+      selector:
+        entity:
+          domain: scene
+    title:
+      selector:
+        text:
+    icon:
+      selector:
+        text:
+    color:
+      selector:
+        text:
+    position:
+      selector:
+        number:
+          min: 0
+          max: 200
+remove:
+  name: Remove a scene from the list
+  description: Removes an entry from the card's list (the scene.* entity itself is not deleted).
+  fields:
+    entity_id:
+      required: true
+      selector:
+        entity:
+          domain: scene
+rename:
+  name: Rename a scene in the list
+  description: Changes the displayed title of an entry.
+  fields:
+    entity_id:
+      required: true
+      selector:
+        entity:
+          domain: scene
+    title:
+      required: true
+      selector:
+        text:
+move:
+  name: Move a scene in the list
+  description: Changes the position of an entry (0 = top).
+  fields:
+    entity_id:
+      required: true
+      selector:
+        entity:
+          domain: scene
+    position:
+      required: true
+      selector:
+        number:
+          min: 0
+          max: 200
+capture:
+  name: Capture current lights as a scene
+  description: Creates a new scene from the exact current state of the lights and adds it to the list.
+  fields:
+    name:
+      required: true
+      selector:
+        text:
+    icon:
+      selector:
+        text:
+    color:
+      selector:
+        text:
