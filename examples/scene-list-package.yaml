@@ -1,0 +1,64 @@
+# Home Assistant package: what the room_scenes component needs around it.
+# Copy to packages/ (configuration.yaml must contain, under `homeassistant:`,
+# `packages: !include_dir_named packages`). The component itself loads with the
+# `room_scenes:` line in configuration.yaml.
+# Example entities: light.living_room_1 to light.living_room_7.
+
+# Group of the 7 lights: one entity to turn everything on, off or dim.
+light:
+  - platform: group
+    name: Living room (all lights)
+    unique_id: living_room_all
+    entities:
+      - light.living_room_1
+      - light.living_room_2
+      - light.living_room_3
+      - light.living_room_4
+      - light.living_room_5
+      - light.living_room_6
+      - light.living_room_7
+
+# The two dropdowns of the management panel. Their options are rewritten by the
+# automation below; an option is "Title || scene.xxx".
+input_select:
+  room_scenes_add_choice:
+    name: "Room scenes - scene to add"
+    options:
+      - "(none)"
+  room_scenes_manage:
+    name: "Room scenes - scene to move/rename/remove"
+    options:
+      - "(none)"
+
+automation:
+  - id: room_scenes_refresh_dropdowns
+    alias: Room scenes - refresh dropdowns
+    description: Keeps the options of the add/manage dropdowns in sync with the scene list.
+    triggers:
+    - trigger: state
+      entity_id: sensor.room_scenes_list
+    - trigger: homeassistant
+      event: start
+    actions:
+    - variables:
+        current_entities: '{{ state_attr(''sensor.room_scenes_list'', ''list'') |
+          default([]) | map(attribute=''entity'') | list }}'
+    # "Manage": the scenes in the list.
+    - action: input_select.set_options
+      target:
+        entity_id: input_select.room_scenes_manage
+      data:
+        options: '{{ (zip(state_attr(''sensor.room_scenes_list'', ''list'') | default([])
+          | map(attribute=''title'') | list, state_attr(''sensor.room_scenes_list'',
+          ''list'') | default([]) | map(attribute=''entity'') | list) | map(''join'',
+          '' || '') | list) or [''(none)''] }}'
+    # "Add": every HA scene not in the list yet.
+    - action: input_select.set_options
+      target:
+        entity_id: input_select.room_scenes_add_choice
+      data:
+        options: '{{ (zip((states.scene | rejectattr(''entity_id'', ''in'', current_entities)
+          | list) | map(attribute=''name'') | list, (states.scene | rejectattr(''entity_id'',
+          ''in'', current_entities) | list) | map(attribute=''entity_id'') | list) |
+          map(''join'', '' || '') | list) or [''(none)''] }}'
+    mode: single

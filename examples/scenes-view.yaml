@@ -1,0 +1,139 @@
+# "Scenes" view for a YAML-mode dashboard (one entry of `views:`), short version.
+# The full view has four blocks: light controls (Fade, Shuffle, on/off, sleep timer), the room
+# card, the management panel, then the gallery (20 categories).
+# Here: the card, the management list and one gallery category.
+# Requirements: hue-like-light-card (Gh61), auto-entities (thomasloven), the scene_presets
+# integration (Hypfer) for the gallery, the room_scenes component, and www/scene-select-row.js
+# declared as a dashboard resource (JavaScript module).
+title: Scenes
+path: scenes
+icon: mdi:palette
+type: sections
+max_columns: 3
+sections:
+  # 1. The Hue-app-style card. Its scene list is not written here: auto-entities reads it from
+  #    the `list` attribute of the sensor published by room_scenes and passes it as the card's
+  #    `scenes` parameter. Any list change shows up immediately.
+  - type: grid
+    column_span: 3
+    cards:
+      - type: custom:auto-entities
+        card:
+          type: custom:hue-like-light-card
+          title: Living room
+          entities:
+            - light.living_room_all
+            - light.living_room_1
+            - light.living_room_2
+            - light.living_room_3
+            - light.living_room_4
+            - light.living_room_5
+            - light.living_room_6
+            - light.living_room_7
+        card_param: scenes
+        filter:
+          template: "{{ state_attr('sensor.room_scenes_list', 'list') }}"
+        grid_options:
+          columns: full
+
+  # 2. The management list: `custom:scene-select-row` rows (`rows` attribute of the same sensor).
+  #    "Select" puts the scene in the dropdown, which the Rename / Up / Down / Remove buttons then
+  #    use (scripts in management-package.yaml).
+  - type: grid
+    column_span: 3
+    cards:
+      - type: custom:auto-entities
+        card:
+          type: entities
+          title: Current scenes
+        filter:
+          template: "{{ state_attr('sensor.room_scenes_list', 'rows') }}"
+      - type: entities
+        title: Move, rename or remove
+        entities:
+          - entity: input_select.room_scenes_manage
+            name: Selected scene
+          - entity: input_text.room_scenes_new_title
+            name: New title
+      - type: horizontal-stack
+        cards:
+          - type: button
+            name: Rename
+            icon: mdi:rename-box
+            tap_action:
+              action: perform-action
+              perform_action: script.room_scenes_rename
+          - type: button
+            name: Up
+            icon: mdi:arrow-up-bold
+            tap_action:
+              action: perform-action
+              perform_action: script.room_scenes_move_up
+          - type: button
+            name: Down
+            icon: mdi:arrow-down-bold
+            tap_action:
+              action: perform-action
+              perform_action: script.room_scenes_move_down
+          - type: button
+            name: Remove
+            icon: mdi:playlist-remove
+            tap_action:
+              action: perform-action
+              perform_action: script.room_scenes_remove
+              confirmation:
+                text: Remove this scene from the list? The scene itself is kept.
+
+  # 3. One gallery category: tap applies the preset to the group, hold applies it with its
+  #    colours shuffled across the lights (scene_presets `shuffle` option).
+  #    IDs come from scene_presets' presets.json.
+  - type: grid
+    column_span: 3
+    cards:
+      - type: heading
+        heading: Gallery (excerpt)
+        icon: mdi:image-multiple
+      - type: picture-glance
+        title: Galaxy
+        image: /assets/scene_presets/a6ba3a6e-1e3a-41fd-84f2-f7b021935deb.jpeg
+        entities: []
+        aspect_ratio: '1:1'
+        grid_options:
+          columns: 6
+        tap_action:
+          action: perform-action
+          perform_action: scene_presets.apply_preset
+          data:
+            preset_id: a6ba3a6e-1e3a-41fd-84f2-f7b021935deb
+            targets:
+              entity_id: light.living_room_all
+        hold_action:
+          action: perform-action
+          perform_action: scene_presets.apply_preset
+          data:
+            preset_id: a6ba3a6e-1e3a-41fd-84f2-f7b021935deb
+            shuffle: true
+            targets:
+              entity_id: light.living_room_all
+      - type: picture-glance
+        title: Blue lagoon
+        image: /assets/scene_presets/58d2dda6-8689-46c7-931b-d3abd039f04b.jpeg
+        entities: []
+        aspect_ratio: '1:1'
+        grid_options:
+          columns: 6
+        tap_action:
+          action: perform-action
+          perform_action: scene_presets.apply_preset
+          data:
+            preset_id: 58d2dda6-8689-46c7-931b-d3abd039f04b
+            targets:
+              entity_id: light.living_room_all
+        hold_action:
+          action: perform-action
+          perform_action: scene_presets.apply_preset
+          data:
+            preset_id: 58d2dda6-8689-46c7-931b-d3abd039f04b
+            shuffle: true
+            targets:
+              entity_id: light.living_room_all

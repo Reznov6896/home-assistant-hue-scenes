@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 572" width="720" height="572" role="img" aria-labelledby="title desc" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <title id="title">No Hue bridge: from the lights to the dashboard</title>
+  <desc id="desc">The seven Hue lights and the dimmer switch talk Zigbee directly to a USB stick on the server. Home Assistant drives them through its built-in Zigbee integration (ZHA). In Home Assistant: the scenes, the preset gallery of the scene_presets integration, the custom room_scenes component that holds the editable scene list, and custom automations and scripts (dimmer, sleep timer, shuffle, fade). The dashboard has two pages, Lights and Scenes; the Scenes page uses hue-like-light-card with auto-entities, and two custom modules loaded next to the card. The Hue bridge and app are removed.</desc>
+  <style>
+    .surface { fill: #fcfcfb; }
+    .t1 { fill: #0b0b0b; }
+    .t2 { fill: #52514e; }
+    .t3 { fill: #898781; }
+    .acc { fill: #186b62; }
+    .b1 { fill: none; stroke: #3d3c39; stroke-width: 1.5; }
+    .b2 { fill: none; stroke: #898781; stroke-width: 1; stroke-dasharray: 3 4; }
+    .bacc { fill: none; stroke: #186b62; stroke-width: 1.8; }
+    .fl { stroke: #52514e; stroke-width: 1.4; fill: none; }
+    .bar { stroke: #898781; stroke-width: 1.2; }
+    .tip { fill: #52514e; }
+    .mono { font-family: ui-monospace, 'Cascadia Mono', Consolas, 'DejaVu Sans Mono', monospace; }
+    @media (prefers-color-scheme: dark) {
+      .surface { fill: #1a1a19; }
+      .t1 { fill: #ffffff; }
+      .t2 { fill: #c3c2b7; }
+      .t3 { fill: #8f8d86; }
+      .acc { fill: #4fb3a5; }
+      .b1 { stroke: #c3c2b7; }
+      .b2 { stroke: #6b6a64; }
+      .bacc { stroke: #4fb3a5; }
+      .fl { stroke: #c3c2b7; }
+      .bar { stroke: #6b6a64; }
+      .tip { fill: #c3c2b7; }
+    }
+  </style>
+  <defs>
+    <marker id="p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="tip" d="M0 0 L10 5 L0 10 z"/></marker>
+  </defs>
+
+  <rect class="surface" x="0" y="0" width="720" height="572" rx="8"/>
+
+  <text class="t1" x="24" y="34" font-size="16" font-weight="600">No bridge: from the lights to the dashboard</text>
+  <text class="t2" x="24" y="54" font-size="12">The lights talk Zigbee directly to the server; two dashboard pages replace the app.</text>
+
+  <!-- legend -->
+  <rect class="bacc" x="24" y="68" width="14" height="10" rx="1"/>
+  <text class="t2" x="44" y="77" font-size="11">written for this project</text>
+  <rect class="b1" x="168" y="68" width="14" height="10" rx="1"/>
+  <text class="t2" x="188" y="77" font-size="11">Home Assistant or reused project</text>
+  <rect class="b2" x="390" y="68" width="14" height="10" rx="1"/>
+  <text class="t2" x="410" y="77" font-size="11">removed</text>
+
+  <!-- devices -->
+  <rect class="b1" x="24" y="96" width="300" height="46" rx="2"/>
+  <text class="t1" x="174" y="115" font-size="12.5" text-anchor="middle">7 Hue lights · 1 dimmer switch</text>
+  <text class="t2" x="174" y="132" font-size="10.5" text-anchor="middle">Zigbee devices, reset then paired one by one</text>
+
+  <!-- former path -->
+  <rect class="b2" x="420" y="96" width="276" height="46" rx="2"/>
+  <text class="t3" x="558" y="115" font-size="12.5" text-anchor="middle">Hue bridge and Hue app</text>
+  <text class="t3" x="558" y="132" font-size="10.5" text-anchor="middle">bridge removed: nothing depends on it</text>
+  <line class="bar" x1="330" y1="119" x2="414" y2="119" stroke-dasharray="3 4"/>
+  <line class="bar" x1="364" y1="111" x2="380" y2="127"/>
+  <line class="bar" x1="380" y1="111" x2="364" y2="127"/>
+
+  <line class="fl" x1="174" y1="144" x2="174" y2="168" marker-end="url(#p)"/>
+  <text class="t2" x="184" y="160" font-size="10.5">Zigbee, no bridge</text>
+
+  <rect class="b1" x="24" y="170" width="300" height="42" rx="2"/>
+  <text class="t1" x="174" y="188" font-size="12.5" text-anchor="middle">USB Zigbee stick on the server</text>
+  <text class="t2" x="174" y="204" font-size="10.5" text-anchor="middle">single coordinator for the lights and the dimmer</text>
+
+  <line class="fl" x1="174" y1="214" x2="174" y2="238" marker-end="url(#p)"/>
+
+  <!-- Home Assistant -->
+  <rect class="b1" x="24" y="240" width="672" height="146" rx="3" stroke-width="1.8"/>
+  <text class="t2 mono" x="38" y="258" font-size="10.5" letter-spacing="1.2">HOME ASSISTANT · BUILT-IN ZIGBEE INTEGRATION (ZHA)</text>
+
+  <rect class="b1" x="40" y="270" width="312" height="46" rx="2"/>
+  <text class="t1" x="56" y="289" font-size="12">Home Assistant scenes</text>
+  <text class="t2" x="56" y="306" font-size="10.5">scenes.yaml, rebuilt from the bridge palettes</text>
+
+  <rect class="b1" x="368" y="270" width="312" height="46" rx="2"/>
+  <text class="t1" x="384" y="289" font-size="12">scene_presets (Hypfer)</text>
+  <text class="t2" x="384" y="306" font-size="10.5">preset gallery, "shuffle" option</text>
+
+  <rect class="bacc" x="40" y="326" width="312" height="46" rx="2"/>
+  <text class="acc" x="56" y="345" font-size="12" font-weight="600">room_scenes — custom component</text>
+  <text class="t2" x="56" y="362" font-size="10.5">editable list · capture · colour swatches</text>
+
+  <rect class="bacc" x="368" y="326" width="312" height="46" rx="2"/>
+  <text class="acc" x="384" y="345" font-size="12" font-weight="600">Automations and scripts</text>
+  <text class="t2" x="384" y="362" font-size="10.5">dimmer · sleep timer · shuffle · fade</text>
+
+  <line class="fl" x1="196" y1="388" x2="196" y2="414" marker-end="url(#p)"/>
+  <text class="t2 mono" x="206" y="405" font-size="10">sensor.room_scenes_list</text>
+  <line class="fl" x1="524" y1="388" x2="524" y2="414" marker-end="url(#p)"/>
+  <text class="t2" x="534" y="405" font-size="10.5">states and services</text>
+
+  <!-- Dashboard -->
+  <rect class="b1" x="24" y="416" width="672" height="140" rx="3" stroke-width="1.8"/>
+  <text class="t2 mono" x="38" y="434" font-size="10.5" letter-spacing="1.2">DASHBOARD</text>
+
+  <rect class="b1" x="40" y="446" width="312" height="46" rx="2"/>
+  <text class="t1" x="56" y="465" font-size="12">Scenes page</text>
+  <text class="t2" x="56" y="482" font-size="10.5">hue-like card (Gh61) via auto-entities · gallery</text>
+
+  <rect class="b1" x="368" y="446" width="312" height="46" rx="2"/>
+  <text class="t1" x="384" y="465" font-size="12">Lights page</text>
+  <text class="t2" x="384" y="482" font-size="10.5">native cards: one tile per light, plus the group</text>
+
+  <rect class="bacc" x="40" y="502" width="640" height="40" rx="2"/>
+  <text class="acc mono" x="56" y="520" font-size="11">hue-card-fixes.js · scene-select-row.js</text>
+  <text class="t2" x="56" y="535" font-size="10.5">loaded next to the card, outside the HACS folder: two fixes and one list row</text>
+</svg>

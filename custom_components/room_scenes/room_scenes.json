@@ -1,0 +1,14 @@
+{
+  "scenes": [],
+  "lights": [
+    "light.living_room_all",
+    "light.living_room_1",
+    "light.living_room_2",
+    "light.living_room_3",
+    "light.living_room_4",
+    "light.living_room_5",
+    "light.living_room_6",
+    "light.living_room_7"
+  ],
+  "tiles": {}
+}

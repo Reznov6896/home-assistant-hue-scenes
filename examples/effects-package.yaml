@@ -1,0 +1,249 @@
+# Home Assistant package: Shuffle, Fade and the sleep timer of the Scenes page.
+#
+# - Shuffle: one random distribution of the last applied scene's colours across the lights.
+# - Fade: Shuffle in a loop, with an adjustable interval (3-60 s) and transition (0.5-10 s).
+#   A script loop is used because an automation's time-pattern trigger cannot read a helper.
+# - Sleep timer: 1-120 min (0 = off); the slider counts down; only a user action starts it,
+#   so a timer never re-arms itself after a restart.
+# - Last applied scene: remembered on every scene or preset applied FROM THE UI (user context),
+#   which also stops a running Fade.
+# Example entities: light.living_room_1..7 and their group light.living_room_all.
+
+input_boolean:
+  fade_active:
+    name: Fade active
+
+input_number:
+  fade_interval:
+    name: Fade - interval between changes
+    min: 3
+    max: 60
+    step: 1
+    initial: 10
+    unit_of_measurement: s
+    icon: mdi:timer-outline
+    mode: slider
+  fade_transition:
+    name: Fade - transition duration
+    min: 0.5
+    max: 10
+    step: 0.5
+    initial: 2
+    unit_of_measurement: s
+    icon: mdi:gradient-horizontal
+    mode: slider
+  sleep_timer_minutes:
+    name: Sleep timer - minutes before off
+    min: 0
+    max: 120
+    step: 1
+    initial: 0
+    unit_of_measurement: min
+    icon: mdi:timer-off-outline
+    mode: slider
+
+input_text:
+  last_applied_scene:
+    name: Last applied scene
+    max: 64
+
+# Palette of each scene / preset: xy colours, one per light. Key = scene entity_id or
+# scene_presets preset_id. Two entries shown; build yours from scenes.yaml and the
+# integration's presets.json.
+template:
+  - sensor:
+      - name: Scene palettes
+        unique_id: scene_palettes
+        state: ok
+        attributes:
+          colors: >-
+            {{ {
+              'scene.red': {'colors': [[0.6915, 0.3083]], 'bri': 255},
+              'a6ba3a6e-1e3a-41fd-84f2-f7b021935deb': {'colors': [[0.1532, 0.0476], [0.2108, 0.2047], [0.3557, 0.3352]], 'bri': 120}
+            } }}
+
+script:
+  shuffle_colors:
+    alias: Shuffle
+    icon: mdi:shuffle-variant
+    mode: single
+    sequence:
+    - action: script.turn_on
+      target:
+        entity_id: script.apply_shuffled_colors
+      data:
+        variables:
+          transition: 0.5
+    - delay:
+        milliseconds: 500
+
+  fade_toggle:
+    alias: Fade
+    icon: mdi:transition
+    mode: single
+    sequence:
+    - if:
+      - condition: state
+        entity_id: input_boolean.fade_active
+        state: "on"
+      then:
+      - action: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.fade_active
+      else:
+      - action: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.fade_active
+      - action: script.turn_on
+        target:
+          entity_id: script.fade_loop
+
+  fade_loop:
+    alias: Fade - loop
+    icon: mdi:transition
+    mode: restart
+    sequence:
+    - repeat:
+        while:
+        - condition: state
+          entity_id: input_boolean.fade_active
+          state: "on"
+        sequence:
+        - action: script.turn_on
+          target:
+            entity_id: script.apply_shuffled_colors
+          data:
+            variables:
+              transition: "{{ states('input_number.fade_transition') | float(2) }}"
+        - delay: "{{ states('input_number.fade_interval') | float(10) }}"
+
+  # Internal: one shuffled palette, one colour per light (cycled if the palette is shorter).
+  apply_shuffled_colors:
+    alias: Apply shuffled colours (internal)
+    mode: single
+    fields:
+      transition:
+        description: Colour transition duration (seconds)
+        example: 2
+    sequence:
+    - variables:
+        scene_key: "{{ states('input_text.last_applied_scene') }}"
+        source: "{{ (state_attr('sensor.scene_palettes', 'colors') or {}).get(scene_key) }}"
+        palette: "{{ (source.colors if source else [[0.323, 0.329]]) | shuffle }}"
+        duration: "{{ transition | default(2) | float(2) }}"
+    - repeat:
+        for_each:
+        - light.living_room_1
+        - light.living_room_2
+        - light.living_room_3
+        - light.living_room_4
+        - light.living_room_5
+        - light.living_room_6
+        - light.living_room_7
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: "{{ repeat.item }}"
+          data:
+            xy_color: "{{ palette[(repeat.index - 1) % (palette | length)] }}"
+            transition: "{{ duration }}"
+
+  sleep_timer:
+    alias: Sleep timer - countdown
+    icon: mdi:timer-off-outline
+    mode: restart
+    sequence:
+    - variables:
+        end_ts: "{{ now().timestamp() + (states('input_number.sleep_timer_minutes') | float(0) * 60) }}"
+    - repeat:
+        while:
+        - condition: template
+          value_template: "{{ end_ts - now().timestamp() > 0 }}"
+        sequence:
+        - action: input_number.set_value
+          target:
+            entity_id: input_number.sleep_timer_minutes
+          data:
+            value: "{{ [((end_ts - now().timestamp()) / 60), 0.01] | max | round(2) }}"
+        - delay:
+            seconds: 5
+    - action: light.turn_off
+      target:
+        entity_id: light.living_room_all
+    - action: input_number.set_value
+      target:
+        entity_id: input_number.sleep_timer_minutes
+      data:
+        value: 0
+
+automation:
+  - id: remember_last_applied_scene
+    alias: Remember the last applied scene
+    mode: restart
+    triggers:
+    - trigger: event
+      event_type: call_service
+      event_data:
+        domain: scene_presets
+        service: apply_preset
+      id: preset
+    - trigger: event
+      event_type: call_service
+      event_data:
+        domain: scene
+        service: turn_on
+      id: ha_scene
+    conditions:
+    # UI actions only (a user context): scripts and automations do not overwrite it.
+    - condition: template
+      value_template: "{{ trigger.event.context.user_id not in (None, '') }}"
+    actions:
+    - if:
+      - condition: trigger
+        id: preset
+      then:
+      - action: input_text.set_value
+        target:
+          entity_id: input_text.last_applied_scene
+        data:
+          value: "{{ trigger.event.data.service_data.preset_id }}"
+    - if:
+      - condition: trigger
+        id: ha_scene
+      then:
+      - action: input_text.set_value
+        target:
+          entity_id: input_text.last_applied_scene
+        data:
+          value: >-
+            {{ trigger.event.data.service_data.entity_id[0]
+               if trigger.event.data.service_data.entity_id is sequence
+                  and trigger.event.data.service_data.entity_id is not string
+               else trigger.event.data.service_data.entity_id }}
+    - action: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.fade_active
+
+  - id: sleep_timer_start_cancel
+    alias: Sleep timer - start / cancel
+    mode: single
+    triggers:
+    - trigger: state
+      entity_id: input_number.sleep_timer_minutes
+    actions:
+    - if:
+      - condition: template
+        value_template: "{{ trigger.to_state.state | float(1) == 0 }}"
+      then:
+      - action: script.turn_off
+        target:
+          entity_id: script.sleep_timer
+      else:
+      # Only a user action starts the countdown (the script's own updates have no user).
+      - if:
+        - condition: template
+          value_template: "{{ trigger.to_state.context.user_id not in (None, '') }}"
+        then:
+        - action: script.turn_on
+          target:
+            entity_id: script.sleep_timer

@@ -1,0 +1,129 @@
+# Home Assistant package: the six scripts behind the management panel buttons
+# (add, capture, rename, remove, move up, move down) and their text fields.
+# They read the dropdowns of scene-list-package.yaml and call the room_scenes.* services.
+
+input_text:
+  room_scenes_new_name:
+    name: "Room scenes - name of the captured scene"
+    max: 64
+    initial: ""
+  room_scenes_new_title:
+    name: "Room scenes - new title"
+    max: 64
+    initial: ""
+
+script:
+  room_scenes_add:
+    alias: Room scenes - add
+    icon: mdi:playlist-plus
+    mode: single
+    sequence:
+    - variables:
+        choice: "{{ states('input_select.room_scenes_add_choice') }}"
+        target_entity: "{{ choice.split(' || ')[-1] if ' || ' in choice else '' }}"
+    - if:
+      - condition: template
+        value_template: "{{ target_entity.startswith('scene.') }}"
+      then:
+      - action: room_scenes.add
+        data:
+          entity_id: "{{ target_entity }}"
+
+  room_scenes_capture:
+    alias: Room scenes - capture current lights
+    icon: mdi:camera-iris
+    mode: single
+    sequence:
+    - variables:
+        new_name: "{{ states('input_text.room_scenes_new_name') | trim }}"
+    - if:
+      - condition: template
+        value_template: "{{ new_name | length > 0 }}"
+      then:
+      - action: room_scenes.capture
+        data:
+          name: "{{ new_name }}"
+      - action: input_text.set_value
+        target:
+          entity_id: input_text.room_scenes_new_name
+        data:
+          value: ""
+
+  room_scenes_rename:
+    alias: Room scenes - rename
+    icon: mdi:rename-box
+    mode: single
+    sequence:
+    - variables:
+        choice: "{{ states('input_select.room_scenes_manage') }}"
+        target_entity: "{{ choice.split(' || ')[-1] if ' || ' in choice else '' }}"
+        new_title: "{{ states('input_text.room_scenes_new_title') | trim }}"
+    - if:
+      - condition: template
+        value_template: "{{ target_entity.startswith('scene.') and new_title | length > 0 }}"
+      then:
+      - action: room_scenes.rename
+        data:
+          entity_id: "{{ target_entity }}"
+          title: "{{ new_title }}"
+      - action: input_text.set_value
+        target:
+          entity_id: input_text.room_scenes_new_title
+        data:
+          value: ""
+
+  room_scenes_remove:
+    alias: Room scenes - remove
+    icon: mdi:playlist-remove
+    mode: single
+    sequence:
+    - variables:
+        choice: "{{ states('input_select.room_scenes_manage') }}"
+        target_entity: "{{ choice.split(' || ')[-1] if ' || ' in choice else '' }}"
+    - if:
+      - condition: template
+        value_template: "{{ target_entity.startswith('scene.') }}"
+      then:
+      - action: room_scenes.remove
+        data:
+          entity_id: "{{ target_entity }}"
+
+  room_scenes_move_up:
+    alias: Room scenes - move up
+    icon: mdi:arrow-up-bold
+    mode: single
+    sequence:
+    - variables:
+        choice: "{{ states('input_select.room_scenes_manage') }}"
+        target_entity: "{{ choice.split(' || ')[-1] if ' || ' in choice else '' }}"
+        entries: "{{ state_attr('sensor.room_scenes_list', 'list') | default([]) | map(attribute='entity') | list }}"
+    - variables:
+        idx: "{{ entries.index(target_entity) if target_entity in entries else -1 }}"
+    - if:
+      - condition: template
+        value_template: "{{ idx > 0 }}"
+      then:
+      - action: room_scenes.move
+        data:
+          entity_id: "{{ target_entity }}"
+          position: "{{ idx - 1 }}"
+
+  room_scenes_move_down:
+    alias: Room scenes - move down
+    icon: mdi:arrow-down-bold
+    mode: single
+    sequence:
+    - variables:
+        choice: "{{ states('input_select.room_scenes_manage') }}"
+        target_entity: "{{ choice.split(' || ')[-1] if ' || ' in choice else '' }}"
+        entries: "{{ state_attr('sensor.room_scenes_list', 'list') | default([]) | map(attribute='entity') | list }}"
+    - variables:
+        idx: "{{ entries.index(target_entity) if target_entity in entries else -1 }}"
+    - if:
+      - condition: template
+        value_template: "{{ idx > -1 and idx < (entries | length - 1) }}"
+      then:
+      - action: room_scenes.move
+        data:
+          entity_id: "{{ target_entity }}"
+          position: "{{ idx + 1 }}"
