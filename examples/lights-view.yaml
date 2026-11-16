@@ -1,0 +1,164 @@
+# "Lights" view for a YAML-mode dashboard (one entry of `views:`): one tile per light + the group.
+# Native tile cards with brightness and colour temperature controls. The glow is optional and
+# needs card-mod (thomasloven): a lit light tints its own tile with its real colour, the group
+# tile shows a gradient of the colours of the lights that are on. Off = normal tile.
+# The glow is written once (YAML anchor &glow) and reused on every single-light tile.
+# Example entities: light.living_room_1..7 and their group light.living_room_all.
+title: Lights
+path: lights
+icon: mdi:lightbulb
+type: sections
+max_columns: 3
+sections:
+  - type: grid
+    column_span: 3
+    cards:
+      - type: heading
+        heading: All lights
+        icon: mdi:lightbulb-group
+      - type: tile
+        entity: light.living_room_all
+        name: Living room
+        icon: mdi:sofa
+        state_content: brightness
+        features:
+          - type: light-brightness
+          - type: light-color-temp
+        grid_options:
+          columns: full
+          rows: 2
+        # Gradient of the real colours of the lights that are on; one light on = its colour, solid.
+        card_mod:
+          style:
+            .: |
+              {% set ns = namespace(c=[]) %}
+              {% for e in state_attr(config.entity, 'entity_id') or [] %}
+                {% if is_state(e, 'on') and state_attr(e, 'rgb_color') %}
+                  {% set ns.c = ns.c + ['rgba(' ~ (state_attr(e, 'rgb_color') | join(',')) ~ ', .55)'] %}
+                {% endif %}
+              {% endfor %}
+              {% set g = ns.c if ns.c | count > 1 else ns.c + ns.c %}
+              ha-card {
+                --ha-card-features-border-radius: 999px;
+                {% if ns.c | count > 0 %}
+                --tile-color: #fff8f0 !important;
+                background: linear-gradient(180deg, rgba(24,21,19,0) 0%, rgba(24,21,19,.55) 100%), linear-gradient(100deg, {{ g | join(', ') }}), var(--card-background-color) !important;
+                {% endif %}
+              }
+              hui-card-features { --feature-height: 52px !important; }
+              ha-tile-info > span:not(.primary) { font-size: 24px !important; font-weight: 300 !important; line-height: 1.25 !important; font-variant-numeric: tabular-nums; }
+
+  - type: grid
+    column_span: 1
+    cards:
+      - type: heading
+        heading: Lamps
+        icon: mdi:floor-lamp-torchiere
+      - type: tile
+        entity: light.living_room_2
+        name: Iris
+        icon: mdi:lava-lamp
+        vertical: true
+        state_content: brightness
+        features: &light_features
+          - type: light-brightness
+          - type: light-color-temp
+        grid_options:
+          columns: 6
+          rows: 2
+        # Glow of the light's own colour while it is on, round controls, large percentage.
+        card_mod: &glow
+          style:
+            .: |
+              {% set c = state_attr(config.entity, 'rgb_color') %}
+              {% set lit = is_state(config.entity, 'on') and c %}
+              ha-card {
+                --ha-card-features-border-radius: 999px;
+                {% if lit %}
+                background: radial-gradient(120% 80% at 50% 0%, rgba({{ c | join(',') }}, .42), rgba({{ c | join(',') }}, .10) 55%, rgba({{ c | join(',') }}, 0) 80%), var(--card-background-color) !important;
+                {% endif %}
+              }
+              {% if lit %}
+              ha-tile-icon { filter: drop-shadow(0 0 10px rgba({{ c | join(',') }}, .55)); }
+              {% endif %}
+              ha-tile-info > span:not(.primary) { font-size: 24px !important; font-weight: 300 !important; line-height: 1.25 !important; font-variant-numeric: tabular-nums; }
+      - type: tile
+        entity: light.living_room_1
+        name: Table lamp
+        icon: mdi:desk-lamp
+        vertical: true
+        state_content: brightness
+        features: *light_features
+        grid_options:
+          columns: 6
+          rows: 2
+        card_mod: *glow
+
+  - type: grid
+    column_span: 1
+    cards:
+      - type: heading
+        heading: TV light bars (Hue Play)
+        icon: mdi:television-ambient-light
+      - type: tile
+        entity: light.living_room_5
+        name: Play left
+        icon: mdi:television-ambient-light
+        vertical: true
+        state_content: brightness
+        features: *light_features
+        grid_options:
+          columns: 4
+          rows: 2
+        card_mod: *glow
+      - type: tile
+        entity: light.living_room_6
+        name: Play middle
+        icon: mdi:television-ambient-light
+        vertical: true
+        state_content: brightness
+        features: *light_features
+        grid_options:
+          columns: 4
+          rows: 2
+        card_mod: *glow
+      - type: tile
+        entity: light.living_room_7
+        name: Play right
+        icon: mdi:television-ambient-light
+        vertical: true
+        state_content: brightness
+        features: *light_features
+        grid_options:
+          columns: 4
+          rows: 2
+        card_mod: *glow
+
+  - type: grid
+    column_span: 1
+    cards:
+      - type: heading
+        heading: Portable lamps (Hue Go)
+        icon: mdi:lamp
+      - type: tile
+        entity: light.living_room_3
+        name: Go kitchen
+        icon: mdi:lamp
+        vertical: true
+        state_content: brightness
+        features: *light_features
+        grid_options:
+          columns: 6
+          rows: 2
+        card_mod: *glow
+      - type: tile
+        entity: light.living_room_4
+        name: Go bathroom
+        icon: mdi:lamp
+        vertical: true
+        state_content: brightness
+        features: *light_features
+        grid_options:
+          columns: 6
+          rows: 2
+        card_mod: *glow

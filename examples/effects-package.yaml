@@ -12,6 +12,11 @@
 input_boolean:
   fade_active:
     name: Fade active
+  # Fold the Fade and sleep timer settings behind their "Settings" tile on the Scenes page.
+  fade_settings_visible:
+    name: Fade settings visible
+  sleep_timer_settings_visible:
+    name: Sleep timer settings visible
 
 input_number:
   fade_interval:

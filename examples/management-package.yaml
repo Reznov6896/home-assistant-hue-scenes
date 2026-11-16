@@ -1,6 +1,17 @@
 # Home Assistant package: the six scripts behind the management panel buttons
 # (add, capture, rename, remove, move up, move down) and their text fields.
 # They read the dropdowns of scene-list-package.yaml and call the room_scenes.* services.
+# The four toggles fold the management menu and its panels on the Scenes page (examples/scenes-view.yaml).
+
+input_boolean:
+  room_scenes_menu_visible:
+    name: "Room scenes - management menu visible"
+  room_scenes_add_visible:
+    name: "Room scenes - add panel visible"
+  room_scenes_capture_visible:
+    name: "Room scenes - capture panel visible"
+  room_scenes_manage_visible:
+    name: "Room scenes - move/rename panel visible"
 
 input_text:
   room_scenes_new_name:
